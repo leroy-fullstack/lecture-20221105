@@ -6,7 +6,7 @@ describe('Cart', function () {
   describe('add product', function () {
     it('should return product name when request is suceeded.', function (done) {
       request.get(
-        'http://localhost:3000/add-to-cart/testName',
+        'http://localhost:3000/add-to-cart?productName=testName',
         function (err, res, body) {
           expect(res.statusCode).to.equal(200);
           const productName = res.body;

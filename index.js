@@ -18,11 +18,12 @@ app.get('/product-detail', function (req, res) {
   res.send(JSON.stringify(product));
 });
 
-app.get('/add-to-cart/:productName', function (req, res) {
+// app.get('/add-to-cart/:productName', function (req, res) {
+  app.get('/add-to-cart', function (req, res) {
   // res.statusCode = 404;
   // res.end();
-  console.log(JSON.stringify(req.params, null, 2));
-  const productName = req.params['productName'];
+  console.log(JSON.stringify(req.query, null, 2));
+  const productName = req.query['productName'];
   cart.push(productName);
 
   res.send(productName);
