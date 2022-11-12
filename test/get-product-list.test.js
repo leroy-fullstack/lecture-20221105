@@ -10,6 +10,7 @@ describe('Product', function () {
         'http://localhost:3000/product-list',
         function (err, res, body) {
           expect(res.statusCode).to.equal(200);
+          console.log(res.body);
           const products = JSON.parse(res.body);
           expect(products.length).to.equal(1);
           assert(products[0].name, 'test name');
