@@ -4,14 +4,42 @@
 // - 카테고리
 // - 가격
 // import { v4 as uuidv4 } from 'uuid';
-const { v4: uuidv4 } = require('uuid');
+const { v4: uuidv4, validate } = require('uuid');
+
+const categories = ['food', 'shoes'];
+
+function mapProduct(record) {
+  const { id: _id, product_id: id, ...rest } = record;
+  const productProps = { id, ...rest };
+  return productProps;
+}
 
 class Product {
-  constructor({ name, category, price }) {
-    this.id = uuidv4();
+  constructor(props) {
+    const { name, category, price } = props;
+
+    // validate
+    this.id = props?.id ?? uuidv4();
     this.name = name;
     this.category = category;
-    this.price = price;
+    this.price = typeof price === 'string' ? Number.parseInt(price, 10) : price;
+
+    this.validate();
+  }
+
+  validate() {
+    if (!this.name || typeof this.name !== 'string') {
+      throw new Error();
+    }
+    if (
+      typeof this.category !== 'string' ||
+      !categories.includes(this.category)
+    ) {
+      throw new Error();
+    }
+    if (typeof this.price !== 'number' || this.price <= 0) {
+      throw new Error();
+    }
   }
 }
 
@@ -28,4 +56,5 @@ const product = new Product({
 
 module.exports = {
   Product,
+  mapProduct,
 };
