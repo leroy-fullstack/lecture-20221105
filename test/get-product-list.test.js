@@ -7,7 +7,7 @@ describe('Product', function () {
     it("should return 1 item's name when requested.", function (done) {
       // assert.equal(['test name'].length, 1);
       request.get(
-        'http://localhost:3000/product-list',
+        'http://localhost:3000/product-list?countPerPage=5&currentPage=1',
         function (err, res, body) {
           expect(res.statusCode).to.equal(200);
           console.log(res.body);

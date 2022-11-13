@@ -6,12 +6,6 @@ const express = require('express');
 const app = express();
 app.use(bodyParser.urlencoded());
 app.use(bodyParser.json());
-// app.use(function (req, res, next) {
-//   // res.setHeader('Content-Type', 'text/plain')
-//   // res.write('you posted:\n')
-//   console.info(JSON.stringify(req.body, null, 2));
-//   next(req, res);
-// });
 
 const knexClient = require('./database/query-builder');
 
@@ -32,8 +26,16 @@ app.get('/', function (req, res) {
   res.send('Hello World');
 });
 
+const defaultCountPerPage = 10;
+const defaultCurrentPage = 1;
+
 app.get('/product-list', async function (req, res) {
-  const queryResult = await knexClient.getProductList();
+  // 페이지 당 표시할 상품 개수
+  const countPerPage = parseIntFromQuery(req.query?.countPerPage, defaultCountPerPage);
+  // 현재 페이지
+  const currentPage = parseIntFromQuery(req.query?.currentPage, defaultCurrentPage);
+
+  const queryResult = await knexClient.getProductList(countPerPage, currentPage);
   console.info('/product-list', JSON.stringify(queryResult, undefined, 2));
 
   const productList = queryResult.map((record) => {
@@ -48,8 +50,7 @@ app.get('/product-list', async function (req, res) {
 app.get('/product-detail', async function (req, res) {
   const productId = req.query['productId'];
   if (!productId) {
-    res.statusCode = 400;
-    res.end();
+    handleError(res);
     return;
   }
 
@@ -120,3 +121,16 @@ app.post('/product', async (req, res) => {
 });
 
 app.listen(3000, () => console.log('app start to listen port 3000..'));
+
+function handleError(res) {
+  res.statusCode = 400;
+  res.end();
+}
+
+function parseIntFromQuery(queryName, defaultValue) {
+  if (!queryName) {
+    return defaultValue;
+  }
+  const intValue = Number.parseInt(queryName, 10);
+  return Number.isNaN(intValue) ? defaultValue : intValue;
+}

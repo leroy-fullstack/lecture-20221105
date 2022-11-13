@@ -76,8 +76,13 @@ const createProduct = async (product) => {
   return insertedCount;
 };
 
-const getProductList = async () => {
-  const selectedRows = await knex('products').select();
+const getProductList = async (countPerPage, currentPage) => {
+  const offset = countPerPage * (currentPage - 1);
+  const selectedRows = await knex('products').select()
+  .orderBy('name', 'asc')
+  .limit(countPerPage)
+  .offset(offset);
+
   return selectedRows;
 };
 
@@ -86,12 +91,17 @@ const getProductDetail = async (productId) => {
   return selectedRows;
 };
 
-const addToCart = async () => {
-  // TODO: implement method
-  throw new Error();
-
-  // const selectedRows = await knex('products').select();
-  // return selectedRows;
+const addToCart = async (cartItem) => {
+  const { id: cart_item_id, registeredAt: registered_at, productId: product_id, productCount: product_count } = cartItem;
+  const toCreate = { 
+    cart_item_id, 
+    registered_at, 
+    product_id, 
+    product_count
+  };
+  console.info(JSON.stringify(toCreate, undefined, 2));
+  const insertedCount = await knex('cart_items').insert(toCreate);
+  return insertedCount;
 };
 
 module.exports = {
